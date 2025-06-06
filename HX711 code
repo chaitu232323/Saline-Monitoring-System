@@ -1,0 +1,31 @@
+#include "HX711.h"
+
+#define DT  3
+#define SCK 2
+#define BUZZER 7
+
+HX711 scale;
+
+void setup() {
+  Serial.begin(9600);
+  scale.begin(DT, SCK);
+  pinMode(BUZZER, OUTPUT);
+  scale.set_scale();
+  scale.tare();  // Reset scale to 0
+}
+
+void loop() {
+  float weight = scale.get_units(5); // average of 5 readings
+  Serial.print("Weight: ");
+  Serial.print(weight);
+  Serial.println(" grams");
+
+  if (weight < 100) {  // Threshold for low saline (adjust as needed)
+    digitalWrite(BUZZER, HIGH);
+    Serial.println("⚠️ ALERT: Low Saline Weight!");
+  } else {
+    digitalWrite(BUZZER, LOW);
+  }
+
+  delay(1000);
+}
